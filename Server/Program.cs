@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -50,6 +50,14 @@ class Program
                 byte[] responseData = Encoding.UTF8.GetBytes(message);
                 await toStream.WriteAsync(responseData, 0, responseData.Length);
 
+                string ipUs = ((IPEndPoint)fromClient.Client.RemoteEndPoint).Address.ToString();
+                string ipCl = ((IPEndPoint)toClient.Client.RemoteEndPoint).Address.ToString();
+
+                string ipChat = GenerateFilenAME(ipUs, ipCl);
+
+
+                Console.WriteLine(ipChat);
+
                 string historyFilePath = Path.Combine(historyFolderPath, $"{((IPEndPoint)fromClient.Client.RemoteEndPoint).Address}_{((IPEndPoint)toClient.Client.RemoteEndPoint).Address}_chat_history.txt");
                 SaveMessageToHistory(historyFilePath, ((IPEndPoint)fromClient.Client.RemoteEndPoint).Address.ToString(), message);
             }
@@ -72,5 +80,55 @@ class Program
         {
             writer.WriteLine($"{DateTime.Now} - IP: {ipAddress}, Message: {message}");
         }
+    }
+    public static string GenerateFilenAME(string firstIp, string secondIp)
+    {
+        try
+        {
+            for (int i = 0; i < firstIp.Length; i++)
+            {
+                int.TryParse(firstIp.Substring(i, 1), out int val);
+                int.TryParse(secondIp.Substring(i, 1), out int val2);
+
+                if (val > val2)
+                {
+                    return ModIP(secondIp) + ":" + ModIP(firstIp);
+                    
+                }
+                else if (val2 > val)
+                {
+                    return ModIP(firstIp) + ":" + ModIP(secondIp);
+                  
+                }
+
+                else if (val == val2)
+                {
+                    return ModIP(firstIp);
+                
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        return null;
+    }
+    public static string ModIP(EndPoint adres, IPEndPoint ipPoint)
+    {
+        return adres.ToString().Replace('.', '_').Substring(0, 15);
+
+    }
+    public static string ModIP(string adres)
+    {
+        string modifiedAdres = adres.Replace('.', '_');
+
+        if (modifiedAdres.Length > 15)
+        {
+            modifiedAdres = modifiedAdres.Substring(0, 15);
+        }
+
+        return modifiedAdres;
     }
 }

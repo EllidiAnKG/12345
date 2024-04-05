@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -113,7 +113,9 @@ namespace _123123Client
             }
         }
 
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
 
-
+        }
     }
 }
